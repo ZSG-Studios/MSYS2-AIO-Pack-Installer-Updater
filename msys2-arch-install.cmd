@@ -1,5 +1,5 @@
 @echo off
-
+:MENU
 REM --------------------------------------------------------------------------
 REM This script runs under Windows CMD, calling MSYS2 bash to:
 REM   1) Update MSYS2 repeatedly if needed (pacman updates) until no more updates.
@@ -25,20 +25,45 @@ if not exist "%MSYS2_BASH%" (
     exit /b 1
 )
 
-:BEGIN_UPDATE
-    echo Updating MSYS2 using pacman -Syu --noconfirm
-    "%MSYS2_BASH%" -lc "pacman -Syu --noconfirm"
-    if errorlevel 1 goto BEGIN_UPDATE
-REM If pacman or msys2-runtime is updated, the old bash can exit with code 1.
-REM This loop re-runs the update until no more forced restarts occur.
-
-REM Now run the user installation script:
-echo Starting msys2-arch-install.sh...
-"%MSYS2_BASH%" -lc "cd "/c/msys64/" && ./msys2-arch-install.sh"
-
-REM Script completed.
+cls
+echo ===================================
+echo           MAIN MENU
+echo ===================================
+echo 1) Update Packages!
+echo 2) Add Packages!
+echo 3) Exit
 echo.
-echo msys2-arch-install.sh has completed.
+set /p choice="Enter your choice [1-3]: "
+
+REM Evaluate the choice and jump to the relevant label.
+if %choice%==1 goto BEGIN_UPDATE
+if %choice%==2 goto SEL_PACKAGES
+if %choice%==3 goto EXIT
+goto MENU
+
+:BEGIN_UPDATE
+    	echo Updating MSYS2 using pacman -Syu --noconfirm
+    	"%MSYS2_BASH%" -lc "pacman -Syu --noconfirm"
+    	if errorlevel 1 goto BEGIN_UPDATE
+	REM If pacman or msys2-runtime is updated, the old bash can exit with code 1.
+	REM This loop re-runs the update until no more forced restarts occur.
+	REM Script completed.
+	echo.
+	echo Update has completed.
+        pause
+goto MENU
+
+:SEL_PACKAGES
+	REM Now run the user installation script:
+	echo Starting msys2-arch-install.sh...
+	"%MSYS2_BASH%" -lc "cd "/c/msys64/" && ./msys2-arch-install.sh"
+	REM Script completed.
+	echo.
+	echo msys2-arch-install.sh has completed.
+        pause
+goto MENU
+
+:EXIT
 pause
 endlocal
 exit /b 0
